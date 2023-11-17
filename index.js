@@ -32,7 +32,7 @@ function dataParse(data) {
 function DebugLog(msg){
   const combinedMsg = msg;
   console.log(combinedMsg);
-  io.emit("SendLog", combinedMsg);
+  io.emit("SendLog", {combinedMsg});
 }
 
 io.on("connection", (socket) => {
