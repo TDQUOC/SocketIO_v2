@@ -29,20 +29,14 @@ function dataParse(data) {
     return null;
   }
 }
+function DebugLog(msg){
+  console.log(msg);
+  io.emit("SendLog", msg);
+}
 
 io.on("connection", (socket) => {
-  console.log("Co nguoi ket noi:" + socket.id);
+  DebugLog("Co nguoi ket noi:" + socket.id);
 
-  socket.on("moSildeR", function (msg) {
-    const combinedMsg = msg;
-    io.emit("moSildeR", combinedMsg);
-    //console.log('multicast: ' + combinedMsg);
-  });
-  socket.on("SendZone", function (msg) {
-    const combinedMsg = msg;
-    io.emit("SendZone", combinedMsg);
-    //console.log('multicast: ' + combinedMsg);
-  });
   /*
     Login socket 
     + Input : name 
@@ -55,8 +49,8 @@ io.on("connection", (socket) => {
   socket.on("define", async (dataInput) => {
     try {
       var data = dataParse(dataInput);
-      console.log("dataInput: " + dataInput);
-      console.log("App: " + data.name);
+      DebugLog("dataInput: " + dataInput);
+      DebugLog("App: " + data.name);
       if (!data) return;
 
       await socket.join(data.name, () => {
@@ -65,7 +59,7 @@ io.on("connection", (socket) => {
           list_rooms.push(rooms[1]);
         }
       });
-      console.log(
+      DebugLog(
         { status: true, message: "Define success!" },
         "define-result"
       );
@@ -79,9 +73,9 @@ io.on("connection", (socket) => {
         list_device: list_rooms,
       });
 
-      console.log({ list_device: list_rooms }, "ControlResponse");
+      DebugLog({ list_device: list_rooms }, "ControlResponse");
     } catch (err) {
-      console.log("Erro --> define " + err);
+      DebugLog("Erro --> define " + err);
       Logger_Error_Send_Frontend(err, "Erro --> define");
     }
   });
@@ -106,7 +100,7 @@ io.on("connection", (socket) => {
         list_device: list_rooms,
       });
     } catch (err) {
-      console.log(err, "Erro --> Control");
+      DebugLog(err, "Erro --> Control");
     }
   });
 
@@ -148,13 +142,13 @@ io.on("connection", (socket) => {
         }
       }
       // Debug log
-      console.log(
+      DebugLog(
         { to: data.to, event: data.event, data: data.data },
         "SendDataOutput"
       );
     } catch (err) {
-      console.log("Erro --> SendData" + err);
-      console.log(err, "Erro --> SendData");
+      DebugLog("Erro --> SendData" + err);
+      DebugLog(err, "Erro --> SendData");
     }
   });
 
@@ -168,19 +162,19 @@ io.on("connection", (socket) => {
   socket.on("SendDataResponse", async (dataInput) => {
     try {
       var data = dataParse(dataInput);
-      console.log(dataInput, "SendDataResponseInput");
+      DebugLog(dataInput, "SendDataResponseInput");
       if (!data) return;
       io.sockets.in("controls").emit("SendDataResponse", {
         to: data.to,
         event: data.event,
         data: data.data,
       });
-      console.log(
+      DebugLog(
         { to: data.to, event: data.event, data: data.data },
         "SendDataResponseOutput"
       );
     } catch (err) {
-      console.log(err, "Erro --> SendDataResponse");
+      DebugLog(err, "Erro --> SendDataResponse");
     }
   });
 
@@ -194,7 +188,7 @@ io.on("connection", (socket) => {
   socket.on("Error", (dataInput) => {
     try {
       var data = dataParse(dataInput);
-      console.log(dataInput, "ErrorInput");
+      DebugLog(dataInput, "ErrorInput");
       if (!data) return;
       io.emit("Error", {
         status_code: 400,
@@ -202,7 +196,7 @@ io.on("connection", (socket) => {
         message: data.message,
         data: data.data,
       });
-      console.log(
+      DebugLog(
         {
           status_code: 400,
           name: data.name,
@@ -212,12 +206,12 @@ io.on("connection", (socket) => {
         "ErrorInputOutPut"
       );
     } catch (err) {
-      console.log(err, "Erro --> Error");
+      DebugLog(err, "Erro --> Error");
     }
   });
 
   socket.on("disconnect", () => {
-    console.log("Co nguoi thoat ket noi " + socket.id);
+    DebugLog("Co nguoi thoat ket noi " + socket.id);
     list_rooms.forEach((item, index) => {
       var room = io.sockets.adapter.rooms[item];
       if (!room) {
@@ -232,5 +226,5 @@ io.on("connection", (socket) => {
 });
 
 http.listen(port, () => {
-  console.log(`Socket.IO server running at http://localhost:${port}/`);
+  DebugLog(`Socket.IO server running at http://localhost:${port}/`);
 });
