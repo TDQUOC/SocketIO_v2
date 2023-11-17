@@ -30,8 +30,9 @@ function dataParse(data) {
   }
 }
 function DebugLog(msg){
-  console.log(msg);
-  io.emit("SendLog", msg);
+  const combinedMsg = msg;
+  console.log(combinedMsg);
+  io.emit("SendLog", combinedMsg);
 }
 
 io.on("connection", (socket) => {
